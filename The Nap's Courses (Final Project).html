@@ -453,6 +453,8 @@ body.light-theme footer {
   <div id="sfx-player"></div>
 </div>
 
+<script src="https://www.youtube.com/iframe_api"></script>
+
 <script>
 let currentMode = localStorage.getItem('mode') === '0' ? 0 : 1;
 if (currentMode === 0) document.body.classList.add('light-theme');
@@ -471,8 +473,6 @@ let fontInterval = null;
 const overlay = document.getElementById('screen-overlay');
 const backBtn = document.getElementById('back-btn');
 const overlayText = document.getElementById('overlay-text');
-const bgPlayer = document.getElementById('bg-player');
-const sfxPlayer = document.getElementById('sfx-player');
 const addDataBtn = document.getElementById('add-data-btn');
 
 // -----------------------------------
@@ -484,18 +484,63 @@ const songs = {
   backgroundTrack: "7L7csHK9EjY"
 };
 
-// Plays tracks inside the background slot (replaces active background music)
-function playAudio(videoId) {
-  bgPlayer.innerHTML = '';
-  if (!videoId) return;
-  bgPlayer.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allow="autoplay"></iframe>`;
+// YouTube API Setup
+let ytBgPlayer = null;
+let ytSfxPlayer = null;
+
+// This API callback automatically instantiates hidden players once YouTube finishes loading
+function onYouTubeIframeAPIReady() {
+  ytBgPlayer = new YT.Player('bg-player', {
+    height: '1',
+    width: '1',
+    videoId: songs.backgroundTrack, // pre-load background track
+    playerVars: {
+      'autoplay': 0,
+      'controls': 0,
+      'disablekb': 1,
+      'fs': 0,
+      'modestbranding': 1,
+      'rel': 0,
+      'showinfo': 0
+    }
+  });
+
+  ytSfxPlayer = new YT.Player('sfx-player', {
+    height: '1',
+    width: '1',
+    videoId: 'JGYI9nSONUo', // pre-load explosion
+    playerVars: {
+      'autoplay': 0,
+      'controls': 0,
+      'disablekb': 1,
+      'fs': 0,
+      'modestbranding': 1,
+      'rel': 0,
+      'showinfo': 0
+    }
+  });
 }
 
-// FIXED: New function plays sound effects inside the SFX slot (concurrent play)
+// Plays track inside the background player
+function playAudio(videoId) {
+  if (!ytBgPlayer || typeof ytBgPlayer.loadVideoById !== 'function') return;
+  if (!videoId) {
+    ytBgPlayer.stopVideo();
+  } else {
+    ytBgPlayer.loadVideoById(videoId);
+    ytBgPlayer.playVideo();
+  }
+}
+
+// Plays sound effects in the dedicated sound effects player
 function playSFX(videoId) {
-  sfxPlayer.innerHTML = '';
-  if (!videoId) return;
-  sfxPlayer.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allow="autoplay"></iframe>`;
+  if (!ytSfxPlayer || typeof ytSfxPlayer.loadVideoById !== 'function') return;
+  if (!videoId) {
+    ytSfxPlayer.stopVideo();
+  } else {
+    ytSfxPlayer.loadVideoById(videoId);
+    ytSfxPlayer.playVideo();
+  }
 }
 
 // ------------------------------------------------
@@ -513,8 +558,10 @@ document.querySelectorAll('.nav-item').forEach(item => {
   item.addEventListener('click', () => {
     const optionIndex = item.getAttribute('data-index');
     
-    // Stop background music during transition screen overlays
+    // Explicitly call an API action immediately upon user click to keep the browser happy
+    if (ytBgPlayer) ytBgPlayer.playVideo(); 
     playAudio(null);
+    
     clearInterval(fontInterval);
     overlayText.textContent = "";
     overlayText.style.fontFamily = "'The Girl Next Door', cursive"; 
