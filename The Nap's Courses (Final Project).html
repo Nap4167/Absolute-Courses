@@ -465,7 +465,6 @@ document.getElementById('theme-toggle').addEventListener('click', () => {
   document.body.classList.toggle('light-theme', currentMode === 0);
 });
 
-// -----------------------------------------------
 let dynamicVar = "idk ¯\\_(´_`)_/¯";
 let nameAdded = false; 
 let fontInterval = null;
@@ -475,7 +474,6 @@ const backBtn = document.getElementById('back-btn');
 const overlayText = document.getElementById('overlay-text');
 const addDataBtn = document.getElementById('add-data-btn');
 
-// -----------------------------------
 const songs = {
   nav1: "IZ8WG4vzYmE",
   nav2BeforeName: "aSc7Yuwn1Ao",
@@ -484,16 +482,14 @@ const songs = {
   backgroundTrack: "7L7csHK9EjY"
 };
 
-// YouTube API Setup
 let ytBgPlayer = null;
 let ytSfxPlayer = null;
 
-// This API callback automatically instantiates hidden players once YouTube finishes loading
 function onYouTubeIframeAPIReady() {
   ytBgPlayer = new YT.Player('bg-player', {
     height: '1',
     width: '1',
-    videoId: songs.backgroundTrack, // pre-load background track
+    videoId: songs.backgroundTrack,
     playerVars: {
       'autoplay': 0,
       'controls': 0,
@@ -508,7 +504,7 @@ function onYouTubeIframeAPIReady() {
   ytSfxPlayer = new YT.Player('sfx-player', {
     height: '1',
     width: '1',
-    videoId: 'JGYI9nSONUo', // pre-load explosion
+    videoId: 'JGYI9nSONUo',
     playerVars: {
       'autoplay': 0,
       'controls': 0,
@@ -521,7 +517,6 @@ function onYouTubeIframeAPIReady() {
   });
 }
 
-// Plays track inside the background player
 function playAudio(videoId) {
   if (!ytBgPlayer || typeof ytBgPlayer.loadVideoById !== 'function') return;
   if (!videoId) {
@@ -532,7 +527,6 @@ function playAudio(videoId) {
   }
 }
 
-// Plays sound effects in the dedicated sound effects player
 function playSFX(videoId) {
   if (!ytSfxPlayer || typeof ytSfxPlayer.loadVideoById !== 'function') return;
   if (!videoId) {
@@ -543,7 +537,6 @@ function playSFX(videoId) {
   }
 }
 
-// ------------------------------------------------
 function startRapidFontShifting() {
   let toggle = false;
   clearInterval(fontInterval);
@@ -553,12 +546,10 @@ function startRapidFontShifting() {
   }, 180); 
 }
 
-// --------------------------------------------------
 document.querySelectorAll('.nav-item').forEach(item => {
   item.addEventListener('click', () => {
     const optionIndex = item.getAttribute('data-index');
     
-    // Explicitly call an API action immediately upon user click to keep the browser happy
     if (ytBgPlayer) ytBgPlayer.playVideo(); 
     playAudio(null);
     
@@ -569,7 +560,6 @@ document.querySelectorAll('.nav-item').forEach(item => {
     overlay.classList.add('show');
     backBtn.classList.add('show');
 
-    // ---------------------------------------------------
     setTimeout(() => {
       if (optionIndex === "1") {
         overlayText.textContent = "The Nap";
@@ -590,7 +580,6 @@ document.querySelectorAll('.nav-item').forEach(item => {
   });
 });
 
-// ---------------------------------
 backBtn.addEventListener('click', () => {
   clearInterval(fontInterval);
   overlayText.textContent = "";
@@ -604,7 +593,6 @@ backBtn.addEventListener('click', () => {
   }
 });
 
-// ------------------------------------------------
 addDataBtn.addEventListener('click', () => {
   let userName = prompt("Please enter your name:");
   if (userName && userName.trim() !== "") {
