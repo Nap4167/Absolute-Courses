@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-    <title>The Nap's Courses</title>
+  <title>The Nap's Courses</title>
   <meta charset="UTF-8">
   <style>
   @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap');
@@ -207,10 +207,6 @@ body {
   border-color: #ffff00;
 }
 
-#video-players {
-  display: none;
-}
-
 main {
   margin-top: 100px;
   padding: 2rem 5%;
@@ -388,7 +384,10 @@ body.light-theme footer {
   <div class="nav-logo">
     <span>The
     <span class="wave-text">
-        <span onclick="playersContainer.innerHTML = '<iframe src=\'https://www.youtube.com/embed/JGYI9nSONUo?autoplay=1\' allow=\'autoplay\'></iframe>';">N</span><span onclick="playersContainer.innerHTML = '<iframe src=\'https://www.youtube.com/embed/JGYI9nSONUo?autoplay=1\' allow=\'autoplay\'></iframe>';">A</span><span onclick="playersContainer.innerHTML = '<iframe src=\'https://www.youtube.com/embed/JGYI9nSONUo?autoplay=1\' allow=\'autoplay\'></iframe>';">P</span></span>
+        <span onclick="playExplosion()">N</span>
+        <span onclick="playExplosion()">A</span>
+        <span onclick="playExplosion()">P</span>
+    </span>
     's Courses</span>
   </div>
   <ul class="nav-links">
@@ -419,9 +418,7 @@ body.light-theme footer {
     <div class="courses-grid">
       <div class="course-card">
         <h3>How to hide a 80k bag of meat</h3>
-        <p>Learn how to secretly dispose of a 80 kelograms bag of meat without being spotted by anyone or caught on camera.
-
-</p>
+        <p>Learn how to secretly dispose of a 80 kilograms bag of meat without being spotted by anyone or caught on camera.</p>
       </div>
       <div class="course-card">
         <h3>how to make people love</h3>
@@ -439,8 +436,6 @@ body.light-theme footer {
   </footer>
 </main>
 
-<div id="video-players"></div>
-
 <script>
 let currentMode = localStorage.getItem('mode') === '0' ? 0 : 1;
 if (currentMode === 0) document.body.classList.add('light-theme');
@@ -452,30 +447,52 @@ document.getElementById('theme-toggle').addEventListener('click', () => {
 });
 
 // -----------------------------------------------
-let dynamicVar = "idk ¯\\_(´_`)_/¯";
+let dynamicVar = "idk Â¯\\_(Â´_`)_/Â¯";
 let nameAdded = false; 
 let fontInterval = null;
 
 const overlay = document.getElementById('screen-overlay');
 const backBtn = document.getElementById('back-btn');
 const overlayText = document.getElementById('overlay-text');
-const playersContainer = document.getElementById('video-players');
 const addDataBtn = document.getElementById('add-data-btn');
 
-// -----------------------------------
+// ---------------------------------------------
+// LOCAL PATH AUDIO SETUP (Lightning-fast!)
+// ---------------------------------------------
 const songs = {
-  nav1: "IZ8WG4vzYmE",
-  nav2BeforeName: "aSc7Yuwn1Ao",
-  nav2AfterName: "7GIWV__qx4M",
-  nav3: "p_ILBgYDmjg",
-  backgroundTrack: "7L7csHK9EjY"
+  nav1: new Audio('assets/man_2.ogg'),
+  nav2BeforeName: new Audio('assets/rain.ogg'),
+  nav2AfterName: new Audio('assets/OMORI OST - 005 By Your Side.mp3'),
+  nav3: new Audio('assets/Waiting Room.mp3'),
+  backgroundTrack: new Audio('assets/backgroundTrack.mp3'), // You can change backgroundTrack.mp3 to whatever file you end up using!
+  explosion: new Audio('assets/Bad explosion - Deltarune sound effect.mp3')
 };
 
-// ---------------------------------------------
-function playAudio(videoId) {
-  playersContainer.innerHTML = '';
-  if (!videoId) return;
-  playersContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allow="autoplay"></iframe>`;
+// Auto-preload all files so there is absolutely 0 delay
+for (let key in songs) {
+  songs[key].preload = 'auto';
+}
+
+let currentlyPlaying = null;
+
+function playAudio(audioObj) {
+  // Stop current sound if playing
+  if (currentlyPlaying) {
+    currentlyPlaying.pause();
+    currentlyPlaying.currentTime = 0;
+  }
+  
+  if (!audioObj) return;
+
+  // Play the requested preloaded audio
+  currentlyPlaying = audioObj;
+  currentlyPlaying.play().catch(err => console.log("Audio play blocked until click interact: ", err));
+}
+
+// Special function for the "N", "A", "P" letters so they reset instantly if spammed
+function playExplosion() {
+  songs.explosion.currentTime = 0;
+  songs.explosion.play().catch(err => console.log(err));
 }
 
 // ------------------------------------------------
@@ -493,8 +510,7 @@ document.querySelectorAll('.nav-item').forEach(item => {
   item.addEventListener('click', () => {
     const optionIndex = item.getAttribute('data-index');
     
-    // ----------------------------------------------------
-    playAudio(null);
+    playAudio(null); // Stop background music when overlay opens
     clearInterval(fontInterval);
     overlayText.textContent = "";
     overlayText.style.fontFamily = "'The Girl Next Door', cursive"; 
@@ -502,7 +518,6 @@ document.querySelectorAll('.nav-item').forEach(item => {
     overlay.classList.add('show');
     backBtn.classList.add('show');
 
-    // ---------------------------------------------------
     setTimeout(() => {
       if (optionIndex === "1") {
         overlayText.textContent = "The Nap";
