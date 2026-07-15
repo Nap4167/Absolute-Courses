@@ -473,6 +473,8 @@ const overlay = document.getElementById('screen-overlay');
 const backBtn = document.getElementById('back-btn');
 const overlayText = document.getElementById('overlay-text');
 const addDataBtn = document.getElementById('add-data-btn');
+const bgContainer = document.getElementById('bg-player');
+const sfxContainer = document.getElementById('sfx-player');
 
 const songs = {
   nav1: "IZ8WG4vzYmE",
@@ -484,8 +486,10 @@ const songs = {
 
 let ytBgPlayer = null;
 let ytSfxPlayer = null;
+let useIframeFallback = true;
 
 function onYouTubeIframeAPIReady() {
+  useIframeFallback = false;
   ytBgPlayer = new YT.Player('bg-player', {
     height: '1',
     width: '1',
@@ -518,22 +522,32 @@ function onYouTubeIframeAPIReady() {
 }
 
 function playAudio(videoId) {
-  if (!ytBgPlayer || typeof ytBgPlayer.loadVideoById !== 'function') return;
-  if (!videoId) {
-    ytBgPlayer.stopVideo();
+  if (!useIframeFallback && ytBgPlayer && typeof ytBgPlayer.loadVideoById === 'function') {
+    if (!videoId) {
+      ytBgPlayer.stopVideo();
+    } else {
+      ytBgPlayer.loadVideoById(videoId);
+      ytBgPlayer.playVideo();
+    }
   } else {
-    ytBgPlayer.loadVideoById(videoId);
-    ytBgPlayer.playVideo();
+    bgContainer.innerHTML = '';
+    if (!videoId) return;
+    bgContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allow="autoplay"></iframe>`;
   }
 }
 
 function playSFX(videoId) {
-  if (!ytSfxPlayer || typeof ytSfxPlayer.loadVideoById !== 'function') return;
-  if (!videoId) {
-    ytSfxPlayer.stopVideo();
+  if (!useIframeFallback && ytSfxPlayer && typeof ytSfxPlayer.loadVideoById === 'function') {
+    if (!videoId) {
+      ytSfxPlayer.stopVideo();
+    } else {
+      ytSfxPlayer.loadVideoById(videoId);
+      ytSfxPlayer.playVideo();
+    }
   } else {
-    ytSfxPlayer.loadVideoById(videoId);
-    ytSfxPlayer.playVideo();
+    sfxContainer.innerHTML = '';
+    if (!videoId) return;
+    sfxContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allow="autoplay"></iframe>`;
   }
 }
 
@@ -550,7 +564,7 @@ document.querySelectorAll('.nav-item').forEach(item => {
   item.addEventListener('click', () => {
     const optionIndex = item.getAttribute('data-index');
     
-    if (ytBgPlayer) ytBgPlayer.playVideo(); 
+    if (!useIframeFallback && ytBgPlayer) ytBgPlayer.playVideo(); 
     playAudio(null);
     
     clearInterval(fontInterval);
