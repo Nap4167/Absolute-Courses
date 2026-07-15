@@ -457,7 +457,7 @@ const overlayText = document.getElementById('overlay-text');
 const addDataBtn = document.getElementById('add-data-btn');
 
 // ---------------------------------------------
-// LOCAL PATH AUDIO SETUP (Lightning-fast!)
+// Fasttttttt Playing !!!!!!!!!!
 // ---------------------------------------------
 const songs = {
   nav1: new Audio('assets/man_2.ogg'),
@@ -468,7 +468,7 @@ const songs = {
   explosion: new Audio('assets/Bad explosion - Deltarune sound effect.mp3')
 };
 
-// Auto-preload all files so there is absolutely 0 delay
+// -------------------------plays fast-------------------------
 for (let key in songs) {
   songs[key].preload = 'auto';
 }
@@ -476,7 +476,7 @@ for (let key in songs) {
 let currentlyPlaying = null;
 
 function playAudio(audioObj) {
-  // Stop current sound if playing
+  // ---------------stops musiق-------------------
   if (currentlyPlaying) {
     currentlyPlaying.pause();
     currentlyPlaying.currentTime = 0;
@@ -489,7 +489,7 @@ function playAudio(audioObj) {
   currentlyPlaying.play().catch(err => console.log("Audio play blocked until click interact: ", err));
 }
 
-// Special function for the "N", "A", "P" letters so they reset instantly if spammed
+// ---------------------if you spammed-------------------------------
 function playExplosion() {
   songs.explosion.currentTime = 0;
   songs.explosion.play().catch(err => console.log(err));
@@ -510,7 +510,7 @@ document.querySelectorAll('.nav-item').forEach(item => {
   item.addEventListener('click', () => {
     const optionIndex = item.getAttribute('data-index');
     
-    playAudio(null); // Stop background music when overlay opens
+    playAudio(null); // ---------------------Stops musiق-------------------------------
     clearInterval(fontInterval);
     overlayText.textContent = "";
     overlayText.style.fontFamily = "'The Girl Next Door', cursive"; 
